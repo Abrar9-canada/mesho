@@ -2,8 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 
+// تعريف واجهة الكارت
+interface CardItem {
+  id: string;
+  name: string;
+}
+
+// تعريف واجهة حالة اللعبة
+interface GameState {
+  red: CardItem[];
+  blue: CardItem[];
+  yellow: CardItem[];
+  black: CardItem[];
+}
+
 // قائمة الكلمات الأساسية
-const baseWords = [
+const baseWords: string[] = [
   "مشمش","جهل","مزرعة","ببغاء","قمر","ساعة","سفارة","نادل","خوارزمية","كتاب",
   "سيارة","حكومة","طائرة","يخت","مخلل","رياضة","بلايستيشن","سلحفاة","مدرسة","بحر",
   "كمبيوتر","مناقش","هاتف","تلفاز","تمر هندي","قطة","مدينة","جبل","نهر","شمس",
@@ -20,7 +34,7 @@ const baseWords = [
   "عصائر","تفاح","موز","برتقال","فراولة","بطيخ","أسد","نمر","فهد","ذئب"
 ];
 
-const wordsList = Array.from({ length: 200 }, (_, i) => 
+const wordsList: CardItem[] = Array.from({ length: 200 }, (_, i) => 
   baseWords.map(word => ({
     id: `${word}_${i}`,
     name: word
@@ -28,15 +42,15 @@ const wordsList = Array.from({ length: 200 }, (_, i) =>
 ).flat();
 
 export default function MeshoCodenames() {
-  const [gameState, setGameState] = useState({ red: [], blue: [], yellow: [], black: [] });
-  const [allCards, setAllCards] = useState([]);
-  const [turn, setTurn] = useState('red');
-  const [copiedMsg, setCopiedMsg] = useState('');
+  const [gameState, setGameState] = useState<GameState>({ red: [], blue: [], yellow: [], black: [] });
+  const [allCards, setAllCards] = useState<CardItem[]>([]);
+  const [turn, setTurn] = useState<'red' | 'blue'>('red');
+  const [copiedMsg, setCopiedMsg] = useState<string>('');
 
   const generateNewGame = () => {
-    const shuffled = [...wordsList].sort(() => 0.5 - Math.random()).slice(0, 25);
+    const shuffled: CardItem[] = [...wordsList].sort(() => 0.5 - Math.random()).slice(0, 25);
     
-    const newGame = {
+    const newGame: GameState = {
       red: shuffled.slice(0, 8),
       blue: shuffled.slice(8, 16),
       yellow: shuffled.slice(16, 24),
@@ -53,16 +67,16 @@ export default function MeshoCodenames() {
     generateNewGame();
   }, []);
 
-  const getCardType = (cardObj) => {
+  const getCardType = (cardObj: CardItem | undefined) => {
     if (!cardObj) return { label: '', color: 'bg-purple-900/40' };
-    if (gameState.red.some(c => c.id === cardObj.id)) return { label: '🔴 أحمر', color: 'bg-red-600/80 border-red-400' };
-    if (gameState.blue.some(c => c.id === cardObj.id)) return { label: '🔵 أزرق', color: 'bg-blue-600/80 border-blue-400' };
-    if (gameState.yellow.some(c => c.id === cardObj.id)) return { label: '🟡 أصفر', color: 'bg-yellow-600/80 border-yellow-400' };
-    if (gameState.black.some(c => c.id === cardObj.id)) return { label: '⚫ قاتل', color: 'bg-gray-900 border-gray-600' };
+    if (gameState.red.some((c: CardItem) => c.id === cardObj.id)) return { label: '🔴 أحمر', color: 'bg-red-600/80 border-red-400' };
+    if (gameState.blue.some((c: CardItem) => c.id === cardObj.id)) return { label: '🔵 أزرق', color: 'bg-blue-600/80 border-blue-400' };
+    if (gameState.yellow.some((c: CardItem) => c.id === cardObj.id)) return { label: '🟡 أصفر', color: 'bg-yellow-600/80 border-yellow-400' };
+    if (gameState.black.some((c: CardItem) => c.id === cardObj.id)) return { label: '⚫ قاتل', color: 'bg-gray-900 border-gray-600' };
     return { label: '', color: 'bg-purple-900/40' };
   };
 
-  const copyToClipboard = (text, type) => {
+  const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
     setCopiedMsg(`تم نسخ ${type} بنجاح! 📋`);
     setTimeout(() => setCopiedMsg(''), 3000);
@@ -70,27 +84,27 @@ export default function MeshoCodenames() {
 
   const spyText = (() => {
     let header = `لعبة كود نيمز\n-----------------------\nخريطة الكلمات للجواسيس (الشارح)\n`;
-    let rows = [];
+    let rows: string[] = [];
     for (let i = 0; i < 8; i++) {
       const redWord = gameState.red[i]?.name ? `${gameState.red[i].name} 🔴` : '';
       const blueWord = gameState.blue[i]?.name ? `${gameState.blue[i].name} 🔵` : '';
       rows.push(`(${redWord} | ${blueWord})`);
     }
     
-    let extraYellow = gameState.yellow.map(w => `(${w.name} 🟡)`).join('\n');
-    let extraBlack = gameState.black.map(w => `(${w.name} ⚫️)`).join('\n');
+    let extraYellow = gameState.yellow.map((w: CardItem) => `(${w.name} 🟡)`).join('\n');
+    let extraBlack = gameState.black.map((w: CardItem) => `(${w.name} ⚫️)`).join('\n');
 
     return header + rows.join('\n') + (extraYellow ? '\n' + extraYellow : '') + (extraBlack ? '\n' + extraBlack : '');
   })();
 
   const playersText = `لعبة كود نيمز\n-----------------------\nخريطة الكلمات للاعبين (العملاء)\n` +
-    allCards.map((c, idx) => `${idx + 1}) ${c.name}`).join('\n');
+    allCards.map((c: CardItem, idx: number) => `${idx + 1}) ${c.name}`).join('\n');
 
   const redTeamText = `كلمات جواسيس الفريق الأحمر 🔴:\n` + 
-    gameState.red.map((c, idx) => `${idx + 1}) ${c.name}`).join('\n');
+    gameState.red.map((c: CardItem, idx: number) => `${idx + 1}) ${c.name}`).join('\n');
   
   const blueTeamText = `كلمات جواسيس الفريق الأزرق 🔵:\n` + 
-    gameState.blue.map((c, idx) => `${idx + 1}) ${c.name}`).join('\n');
+    gameState.blue.map((c: CardItem, idx: number) => `${idx + 1}) ${c.name}`).join('\n');
 
   return (
     <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white p-4 md:p-8 font-sans">
@@ -166,7 +180,7 @@ export default function MeshoCodenames() {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-        {allCards.map((cardObj, index) => {
+        {allCards.map((cardObj: CardItem, index: number) => {
           const info = getCardType(cardObj);
           return (
             <div 

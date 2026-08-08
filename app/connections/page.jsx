@@ -2,8 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 
+// تعريف واجهات الأنواع
+interface CategoryGroup {
+  category: string;
+  words: string[];
+}
+
+interface WordItem {
+  id: number;
+  text: string;
+  selected: boolean;
+}
+
 // قاعدة بيانات ضخمة وموسعة لمجموعات الروابط
-const hugeCategoriesPool = [
+const hugeCategoriesPool: CategoryGroup[] = [
   // فئة أعضاء الجسم
   { category: "أعضاء وجه الإنسان", words: ["فم", "عين", "اذن", "كف"] },
   { category: "أعضاء داخلية", words: ["قلب", "كبد", "رئة", "معدة"] },
@@ -50,12 +62,12 @@ const hugeCategoriesPool = [
 ];
 
 export default function ConnectionsGame() {
-  const [currentPuzzle, setCurrentPuzzle] = useState({ groups: [] });
-  const [words, setWords] = useState([]);
-  const [solvedGroups, setSolvedGroups] = useState([]);
-  const [mistakes, setMistakes] = useState(4);
-  const [showModal, setShowModal] = useState(false);
-  const [message, setMessage] = useState('');
+  const [currentPuzzle, setCurrentPuzzle] = useState<{ groups: CategoryGroup[] }>({ groups: [] });
+  const [words, setWords] = useState<WordItem[]>([]);
+  const [solvedGroups, setSolvedGroups] = useState<CategoryGroup[]>([]);
+  const [mistakes, setMistakes] = useState<number>(4);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
 
   // اختيار 4 مجموعات عشوائية فريدة تماماً بدون تكرار الكلمات
   const generateRandomPuzzle = () => {
@@ -63,7 +75,7 @@ export default function ConnectionsGame() {
     const selectedGroups = shuffledPool.slice(0, 4);
     
     const allWords = selectedGroups.flatMap(g => g.words);
-    const shuffledWords = allWords.sort(() => Math.random() - 0.5).map((word, idx) => ({
+    const shuffledWords: WordItem[] = allWords.sort(() => Math.random() - 0.5).map((word, idx) => ({
       id: idx,
       text: word,
       selected: false
@@ -81,7 +93,7 @@ export default function ConnectionsGame() {
   }, []);
 
   // اختيار كلمة أو إلغاء تحديدها
-  const handleCardClick = (id) => {
+  const handleCardClick = (id: number) => {
     setWords(words.map(w => {
       if (w.id === id && !solvedGroups.some(g => g.words.includes(w.text))) {
         const selectedCount = words.filter(item => item.selected).length;

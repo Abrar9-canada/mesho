@@ -3,8 +3,14 @@
 
 import React, { useEffect, useState } from 'react';
 
+interface GameItem {
+  name: string;
+  file: string;
+  desc: string;
+}
+
 export default function MeshoLobby() {
-  const [gameId, setGameId] = useState('');
+  const [gameId, setGameId] = useState<string>('');
 
   useEffect(() => {
     let storedId = localStorage.getItem("gameId");
@@ -16,10 +22,11 @@ export default function MeshoLobby() {
     setGameId(storedId);
   }, []);
 
-  const games = [
+  const games: GameItem[] = [
     { name: "Codenames", file: "codenames", desc: "لعبة التجسس والكلمات الجماعية" },
     { name: "قول بس لا تقول", file: "say_no_say", desc: "لعبة الحماس والتحدي بدون كلمات محظورة" },
     { name: "روابط", file: "connections", desc: "لعبة تجميع الكلمات المتشابهة وتحدي الذكاء" },
+    { name: "مواجهة العائلات", file: "family_feud", desc: "لعبة التحدي والأسئلة الجماعية العائلية الحماسية" },
     { name: "قريباً ... 🚧", file: "#", desc: "ألعاب جديدة ممتعة في الطريق إليكِ" }
   ];
 
@@ -56,6 +63,7 @@ export default function MeshoLobby() {
             <span className="mt-4 text-xs font-semibold bg-purple-950/80 border border-purple-500/40 text-pink-300 py-1.5 px-3 rounded-xl self-center">
               {game.file !== "#" ? "ابدأ اللعب 🚀" : "قريباً 🔒"}
             </span>
+
           </div>
         ))}
       </main>
