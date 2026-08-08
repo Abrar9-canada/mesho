@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-// تعريف واجهة الكارت
 interface CardItem {
   id: string;
   name: string;
 }
 
-// تعريف واجهة حالة اللعبة
 interface GameState {
   red: CardItem[];
   blue: CardItem[];
@@ -16,7 +15,6 @@ interface GameState {
   black: CardItem[];
 }
 
-// قائمة الكلمات الأساسية
 const baseWords: string[] = [
   "مشمش","جهل","مزرعة","ببغاء","قمر","ساعة","سفارة","نادل","خوارزمية","كتاب",
   "سيارة","حكومة","طائرة","يخت","مخلل","رياضة","بلايستيشن","سلحفاة","مدرسة","بحر",
@@ -42,6 +40,7 @@ const wordsList: CardItem[] = Array.from({ length: 200 }, (_, i) =>
 ).flat();
 
 export default function MeshoCodenames() {
+  const router = useRouter();
   const [gameState, setGameState] = useState<GameState>({ red: [], blue: [], yellow: [], black: [] });
   const [allCards, setAllCards] = useState<CardItem[]>([]);
   const [turn, setTurn] = useState<'red' | 'blue'>('red');
@@ -64,8 +63,13 @@ export default function MeshoCodenames() {
   };
 
   useEffect(() => {
+    // حماية الدخول: التأكد من تسجيل الدخول أولاً
+    if (!localStorage.getItem("userName")) {
+      router.push('/');
+      return;
+    }
     generateNewGame();
-  }, []);
+  }, [router]);
 
   const getCardType = (cardObj: CardItem | undefined) => {
     if (!cardObj) return { label: '', color: 'bg-purple-900/40' };
@@ -109,7 +113,7 @@ export default function MeshoCodenames() {
   return (
     <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white p-4 md:p-8 font-sans">
       
-      {/* رأس الصفحة مع زر العودة للصالة */}
+      {/* رأس الصفحة مع زر العودة المحدث للـ Lobby */}
       <header className="flex justify-between items-center bg-[#18052c] border border-purple-500/30 p-4 rounded-2xl shadow-lg mb-6">
         <h1 className="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
           🎮 Mesho - Codenames
@@ -119,11 +123,11 @@ export default function MeshoCodenames() {
           <span className="hidden sm:inline text-xs bg-purple-900/60 border border-purple-500/40 px-3 py-1.5 rounded-full text-pink-300">
             لوحة تحكم المضيف
           </span>
-          <a 
-            href="/" 
-            className="bg-purple-950/80 border border-purple-500/50 hover:bg-purple-900 transition text-pink-300 text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-md">
+          <button 
+            onClick={() => router.push('/lobby')}
+            className="bg-purple-950/80 border border-purple-500/50 hover:bg-purple-900 transition text-pink-300 text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-md cursor-pointer">
             🏠 العودة للصالة
-          </a>
+          </button>
         </div>
       </header>
 
@@ -137,17 +141,17 @@ export default function MeshoCodenames() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         <button 
           onClick={generateNewGame}
-          className="bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2">
+          className="bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 cursor-pointer">
           🔄 بدء لعبة جديدة
         </button>
         <button 
           onClick={() => copyToClipboard(spyText, 'خريطة الجواسيس')}
-          className="bg-purple-900/80 border border-purple-500/50 hover:bg-purple-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2">
+          className="bg-purple-900/80 border border-purple-500/50 hover:bg-purple-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 cursor-pointer">
           📋 نسخ خريطة الجواسيس
         </button>
         <button 
           onClick={() => copyToClipboard(playersText, 'كلمات اللاعبين')}
-          className="bg-purple-900/80 border border-purple-500/50 hover:bg-purple-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2">
+          className="bg-purple-900/80 border border-purple-500/50 hover:bg-purple-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 cursor-pointer">
           👥 نسخ كلمات اللاعبين
         </button>
       </div>
@@ -156,12 +160,12 @@ export default function MeshoCodenames() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         <button 
           onClick={() => copyToClipboard(redTeamText, 'كلمات جواسيس الفريق الأحمر')}
-          className="bg-red-900/80 border border-red-500/50 hover:bg-red-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2">
+          className="bg-red-900/80 border border-red-500/50 hover:bg-red-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 cursor-pointer">
           🔴 نسخ كلمات جواسيس الفريق الأحمر
         </button>
         <button 
           onClick={() => copyToClipboard(blueTeamText, 'كلمات جواسيس الفريق الأزرق')}
-          className="bg-blue-900/80 border border-blue-500/50 hover:bg-blue-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2">
+          className="bg-blue-900/80 border border-blue-500/50 hover:bg-blue-800 transition p-3 rounded-xl font-bold shadow-md flex items-center justify-center gap-2 cursor-pointer">
           🔵 نسخ كلمات جواسيس الفريق الأزرق
         </button>
       </div>
@@ -192,6 +196,7 @@ export default function MeshoCodenames() {
           );
         })}
       </div>
+
     </div>
   );
 }

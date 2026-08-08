@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const sentencesList: string[] = [
   // --- قسم الحِكم والأمثال الشعبية العربية والموثوقة ---
@@ -311,9 +312,17 @@ const sentencesList: string[] = [
 ];
 
 export default function SayNotToSayGame() {
+  const router = useRouter();
   const [currentSentence, setCurrentSentence] = useState<string>('اضغط "حكمة جديدة" لبدء التحدي!');
   const [copiedMsg, setCopiedMsg] = useState<string>('');
   const [usedIndices, setUsedIndices] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!localStorage.getItem("userName")) {
+      router.push('/');
+      return;
+    }
+  }, [router]);
 
   const getRandomSentence = () => {
     if (usedIndices.length >= sentencesList.length) {
@@ -348,9 +357,11 @@ export default function SayNotToSayGame() {
     <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white flex flex-col items-center justify-center p-4 md:p-8 font-sans">
       
       <div className="absolute top-4 right-4">
-        <a href="/" className="bg-[#18052c] border border-purple-500/40 text-pink-300 text-xs px-4 py-2 rounded-xl hover:bg-purple-900/50 transition">
+        <button 
+          onClick={() => router.push('/lobby')}
+          className="bg-[#18052c] border border-purple-500/40 text-pink-300 text-xs px-4 py-2 rounded-xl hover:bg-purple-900/50 transition cursor-pointer">
           🏠 العودة للصالة
-        </a>
+        </button>
       </div>
 
       <div className="flex items-center gap-2 mb-2 text-center">

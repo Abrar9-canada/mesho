@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 // تعريف واجهات الأنواع
 interface AnswerItem {
@@ -109,6 +110,7 @@ const database: QuestionItem[] = Array.from({ length: 500 }, (_, index) => {
 });
 
 export default function FamilyFeudGame() {
+  const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [revealedAnswers, setRevealedAnswers] = useState<boolean[]>(
     new Array(database[0].answers.length).fill(false)
@@ -123,6 +125,13 @@ export default function FamilyFeudGame() {
   const [message, setMessage] = useState<string>('');
 
   const currentQ = database[currentQuestionIndex % database.length];
+
+  useEffect(() => {
+    if (!localStorage.getItem("userName")) {
+      router.push('/');
+      return;
+    }
+  }, [router]);
 
   const nextQuestion = () => {
     const nextIdx = (currentQuestionIndex + 1) % database.length;
@@ -187,9 +196,11 @@ export default function FamilyFeudGame() {
         <h1 className="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
           🔥 مواجهة العائلات (Family Feud)
         </h1>
-        <a href="/" className="bg-[#18052c] border border-purple-500/40 text-pink-300 text-xs px-4 py-2 rounded-xl hover:bg-purple-900/50 transition">
+        <button 
+          onClick={() => router.push('/lobby')}
+          className="bg-[#18052c] border border-purple-500/40 text-pink-300 text-xs px-4 py-2 rounded-xl hover:bg-purple-900/50 transition cursor-pointer">
           🏠 العودة للصالة
-        </a>
+        </button>
       </header>
 
       <main className="max-w-4xl mx-auto w-full my-6 flex-grow flex flex-col items-center">
@@ -254,7 +265,7 @@ export default function FamilyFeudGame() {
               />
               <button 
                 onClick={() => checkTeamInput('A')}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition">
+                className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition cursor-pointer">
                 مقارنة
               </button>
             </div>
@@ -272,7 +283,7 @@ export default function FamilyFeudGame() {
               />
               <button 
                 onClick={() => checkTeamInput('B')}
-                className="bg-pink-600 hover:bg-pink-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition">
+                className="bg-pink-600 hover:bg-pink-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition cursor-pointer">
                 مقارنة
               </button>
             </div>
@@ -288,7 +299,7 @@ export default function FamilyFeudGame() {
 
         <button 
           onClick={nextQuestion}
-          className="bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 transition px-8 py-3 rounded-xl font-bold shadow-md text-base">
+          className="bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 transition px-8 py-3 rounded-xl font-bold shadow-md text-base cursor-pointer">
           🔄 السؤال التالي في المواجهة 🚀
         </button>
 

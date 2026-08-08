@@ -58,11 +58,11 @@ export default function PuzzlePage() {
           Submit
         </button>
 
-        {/* زر العودة لصفحة تسجيل الدخول */}
+        {/* زر العودة للصفحة الرئيسية */}
         <button 
-          onClick={() => router.push('/login')}
+          onClick={() => router.push('/')}
           className="mt-2.5 p-2 w-full border border-[#ff9ad5]/40 rounded-[10px] bg-transparent text-[#ff9ad5] font-semibold text-xs cursor-pointer hover:bg-[#ff9ad5]/10 transition-all">
-          🔙 العودة لتسجيل الدخول
+          🔙 العودة للرئيسية
         </button>
 
         <p className={`mt-3 text-sm font-semibold min-h-[20px] ${msg.includes('صحيحة') ? 'text-green-400' : 'text-red-400'}`}>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface CategoryGroup {
   category: string;
@@ -45,6 +46,7 @@ const hugeCategoriesPool: CategoryGroup[] = [
 ];
 
 export default function ConnectionsGame() {
+  const router = useRouter();
   const [currentPuzzle, setCurrentPuzzle] = useState<{ groups: CategoryGroup[] }>({ groups: [] });
   const [words, setWords] = useState<WordItem[]>([]);
   const [solvedGroups, setSolvedGroups] = useState<CategoryGroup[]>([]);
@@ -71,8 +73,12 @@ export default function ConnectionsGame() {
   };
 
   useEffect(() => {
+    if (!localStorage.getItem("userName")) {
+      router.push('/');
+      return;
+    }
     generateRandomPuzzle();
-  }, []);
+  }, [router]);
 
   const handleCardClick = (id: number) => {
     setWords(words.map(w => {
@@ -135,11 +141,11 @@ export default function ConnectionsGame() {
             روابط
           </h1>
         </div>
-        <a 
-          href="/" 
-          className="bg-purple-950/80 border border-purple-500/50 hover:bg-purple-900 transition text-pink-300 text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-md">
+        <button 
+          onClick={() => router.push('/lobby')}
+          className="bg-purple-950/80 border border-purple-500/50 hover:bg-purple-900 transition text-pink-300 text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 font-bold shadow-md cursor-pointer">
           🏠 العودة للصالة
-        </a>
+        </button>
       </header>
 
       <main className="w-full max-w-3xl flex flex-col items-center flex-grow">

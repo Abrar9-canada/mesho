@@ -1,75 +1,108 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-interface GameItem {
-  name: string;
-  file: string;
-  desc: string;
-}
+export default function LoginPage() {
+  const router = useRouter();
+  const [key, setKey] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
+  const [messageType, setMessageType] = useState<string>('');
+  const [isShaking, setIsShaking] = useState<boolean>(false);
 
-export default function MeshoLobby() {
-  const [gameId, setGameId] = useState<string>('');
+  const handleEnter = () => {
+    const trimmedKey = key.trim();
 
-  useEffect(() => {
-    let storedId = localStorage.getItem("gameId");
-    if (!storedId) {
-      storedId = Date.now() + Math.random().toString(36).substring(2);
-      localStorage.setItem("gameId", storedId);
+    if (trimmedKey === '') {
+      triggerError('⚠️ الرجاء إدخال كلمة المرور أولاً');
+      return;
     }
-    setGameId(storedId);
-  }, []);
 
-  const games: GameItem[] = [
-    { name: "Codenames", file: "codenames", desc: "لعبة التجسس والكلمات الجماعية" },
-    { name: "قول بس لا تقول", file: "say_no_say", desc: "لعبة الحماس والتحدي بدون كلمات محظورة" },
-    { name: "روابط", file: "connections", desc: "لعبة تجميع الكلمات المتشابهة وتحدي الذكاء" },
-    { name: "مواجهة العائلات", file: "family_feud", desc: "لعبة التحدي والأسئلة الجماعية العائلية الحماسية" },
-    { name: "قريباً ... 🚧", file: "#", desc: "ألعاب جديدة ممتعة في الطريق إليكِ" }
-  ];
+    if (trimmedKey === '1234') {
+      // كلمة المرور صحيحة
+      const gameId = (Date.now() + Math.floor(Math.random() * 100000)).toString();
+      localStorage.setItem('gameId', gameId);
 
-  const handleGameClick = (file: string) => {
-    if (file !== "#") {
-      window.location.href = `/${file}?id=${gameId}`;
+      setMessageType('success');
+      setMessage('✨ كلمة المرور صحيحة، جاري الدخول...');
+      
+      // التوجيه إلى الصفحة الرئيسية عن طريق المسار '/'
+      setTimeout(() => {
+        router.push('/'); 
+      }, 600);
+
     } else {
-      alert("هذه اللعبة قيد التطوير، انتظرونا قريباً! ✨");
+      // كلمة المرور خاطئة
+      setMessageType('error');
+      setMessage('❌ كلمة المرور غير صحيحة، جاري التحويل...');
+      triggerShake();
+      
+      setTimeout(() => {
+        router.push('/puzzle'); // التوجيه لصفحة الألغاز
+      }, 800);
+    }
+  };
+
+  const triggerError = (text: string) => {
+    setMessageType('error');
+    setMessage(text);
+    triggerShake();
+  };
+
+  const triggerShake = () => {
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 400);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleEnter();
     }
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white font-sans flex flex-col justify-between">
-      {/* رأس الصفحة */}
-      <header className="py-6 px-4 text-center bg-[#18052c] border-b border-purple-500/30 shadow-[0_0_20px_rgba(255,154,213,0.15)]">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
-          ⚡🎮 صالة ألعاب Mesho
-        </h1>
-        <p className="text-gray-400 text-sm mt-2">منصتك الجماعية المفضلة لقضاء أمتع الأوقات مع الأصدقاء</p>
-      </header>
+    <div dir="rtl" className="relative min-h-screen bg-[radial-gradient(circle_at_center,#18052c_0%,#0d021a_100%)] text-white flex justify-center items-center overflow-hidden font-sans">
+      
+      <div className="absolute w-[300px] h-[300px] bg-pink-500/15 blur-[80px] rounded-full z-0"></div>
 
-      {/* قائمة الألعاب */}
-      <main className="container mx-auto p-6 max-w-4xl flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-center">
-        {games.map((game, index) => (
-          <div
-            key={index}
-            onClick={() => handleGameClick(game.file)}
-            className="bg-[#18052c]/80 border border-purple-500/30 p-6 rounded-2xl text-center cursor-pointer transition-all duration-300 hover:scale-105 hover:border-pink-400 hover:shadow-[0_0_25px_rgba(255,154,213,0.3)] flex flex-col justify-between min-h-[180px]"
-          >
-            <div>
-              <h3 className="text-xl font-bold text-pink-300 mb-2">{game.name}</h3>
-              <p className="text-xs text-gray-400 leading-relaxed">{game.desc}</p>
-            </div>
-            <span className="mt-4 text-xs font-semibold bg-purple-950/80 border border-purple-500/40 text-pink-300 py-1.5 px-3 rounded-xl self-center">
-              {game.file !== "#" ? "ابدأ اللعب 🚀" : "قريباً 🔒"}
-            </span>
+      <div className={`relative z-10 bg-[#18052c]/85 backdrop-blur-md border border-pink-500/20 p-10 rounded-[28px] text-center w-[380px] shadow-[0_20px_40px_rgba(0,0,0,0.6),0_0_25px_rgba(236,72,153,0.15)] animate-[fadeIn_0.8s_ease-out] ${isShaking ? 'animate-[shake_0.4s_ease-in-out]' : ''}`}>
+        
+        <div className="text-[45px] mb-4 animate-[bounce_2s_infinite]">
+          ☕
+        </div>
 
-          </div>
-        ))}
-      </main>
+        <h2 className="text-[22px] font-extrabold bg-gradient-to-r from-pink-500 to-purple-400 bg-clip-text text-transparent mb-6">
+          أهلاً بك في صالة بيتكم
+        </h2>
 
-      {/* تذييل الصفحة */}
-      <footer className="text-center py-4 text-xs text-gray-500 border-t border-purple-900/40">
-        جميع الحقوق محفوظة © 2026 - Mesho Games
-      </footer>
+        <div className="relative mb-5">
+          <input 
+            type="password" 
+            value={key}
+            onChange={(e) => setKey(e.target.value)}
+            onKeyDown={handleKeyPress}
+            placeholder="أدخل كلمة المرور" 
+            autoComplete="off"
+            className="w-full py-3.5 px-4 bg-[#0d021a]/60 border border-purple-500/30 rounded-2xl text-white text-center text-base outline-none transition-all duration-300 focus:border-pink-500 focus:shadow-[0_0_15px_rgba(236,72,153,0.3)] placeholder:text-white/40"
+          />
+        </div>
+
+        <button 
+          onClick={handleEnter}
+          className="w-full py-3.5 border-none rounded-2xl bg-gradient-to-br from-pink-500 to-purple-700 text-white text-base font-bold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(236,72,153,0.4)] hover:opacity-95 hover:-translate-y-0.5 active:translate-y-0">
+          دخول
+        </button>
+        
+        <div className={`mt-4 text-xs font-semibold min-h-[20px] transition-all duration-300 ${messageType === 'error' ? 'text-red-400' : 'text-green-400'}`}>
+          {message}
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+      `}</style>
     </div>
   );
 }
