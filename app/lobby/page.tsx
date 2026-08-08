@@ -15,10 +15,9 @@ export default function MeshoLobby() {
   const router = useRouter();
 
   useEffect(() => {
-    // التحقق من وجود اسم المستخدم في الذاكرة المحلية (حماية الصالة)
     const storedUser = localStorage.getItem("userName");
     if (!storedUser) {
-      router.push('/'); // إذا لم يكن مسجلاً، أعده لصفحة الدخول الرئيسية
+      router.push('/');
       return;
     }
     setUserName(storedUser);
@@ -55,19 +54,22 @@ export default function MeshoLobby() {
   return (
     <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white font-sans flex flex-col justify-between">
       {/* رأس الصفحة */}
-      <header className="py-6 px-4 text-center bg-[#18052c] border-b border-purple-500/30 shadow-[0_0_20px_rgba(255,154,213,0.15)] relative">
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-3">
-          <span className="text-sm text-pink-300 font-bold hidden sm:inline">أهلاً، {userName} ✨</span>
+      <header className="py-6 px-4 bg-[#18052c] border-b border-purple-500/30 shadow-[0_0_20px_rgba(255,154,213,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 relative">
+        <div className="text-center sm:text-right">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
+            ⚡🎮 صالة ألعاب Mesho
+          </h1>
+          <p className="text-gray-400 text-sm mt-1">منصتك الجماعية المفضلة لقضاء أمتع الأوقات مع الأصدقاء</p>
+        </div>
+
+        <div className="flex items-center gap-3 bg-purple-950/40 border border-purple-500/20 px-4 py-2 rounded-2xl">
+          <span className="text-sm text-pink-300 font-bold">أهلاً، {userName} ✨</span>
           <button 
             onClick={handleLogout}
             className="bg-purple-950/80 border border-purple-500/40 hover:bg-purple-900 transition text-pink-300 text-xs px-3 py-1.5 rounded-xl cursor-pointer">
             خروج 🚪
           </button>
         </div>
-        <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
-          ⚡🎮 صالة ألعاب Mesho
-        </h1>
-        <p className="text-gray-400 text-sm mt-2">منصتك الجماعية المفضلة لقضاء أمتع الأوقات مع الأصدقاء</p>
       </header>
 
       {/* قائمة الألعاب */}

@@ -24,7 +24,7 @@ const baseWords: string[] = [
   "نار","ثلج","مطر","سحاب","رمل","صخرة","نجمة","فضاء","كوكب","مجرة",
   "روبوت","إنترنت","تطبيق","لعبة","فريق","مدرب","هدف","ملعب","كرة","بطولة",
   "سباق","كاميرا","تصوير","فيلم","مسرح","موسيقى","غناء","بيانو","جيتار","طبلة",
-  "ضوء","ظل","ليل","نهار","صمت","ضجيج","هدوء","حركة","وقت","تاريخ",
+  "ضوء","ظل","ليل","نهار","صمت","ضجيج","هدوء","وقت","تاريخ",
   "ذاكرة","فكرة","حلم","واقع","خيال","ذكاء","علم","تجربة","معادلة","مختبر",
   "كويت","خبرة","مقابلة","جراحة","زحل","أقحوان","داعش","مسدس","كلب","غريبة",
   "كريستيانو","لبلاب","بدروم","شيفروليه","وظيفة","شركة","ميزانية","بوليس","طبيب","سؤال",
@@ -43,6 +43,7 @@ export default function MeshoCodenames() {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>({ red: [], blue: [], yellow: [], black: [] });
   const [allCards, setAllCards] = useState<CardItem[]>([]);
+  const [revealedIds, setRevealedIds] = useState<string[]>([]);
   const [turn, setTurn] = useState<'red' | 'blue'>('red');
   const [copiedMsg, setCopiedMsg] = useState<string>('');
 
@@ -58,12 +59,12 @@ export default function MeshoCodenames() {
 
     setGameState(newGame);
     setAllCards([...shuffled].sort(() => 0.5 - Math.random()));
+    setRevealedIds([]);
     setTurn('red');
     setCopiedMsg('');
   };
 
   useEffect(() => {
-    // حماية الدخول: التأكد من تسجيل الدخول أولاً
     if (!localStorage.getItem("userName")) {
       router.push('/');
       return;
@@ -71,13 +72,34 @@ export default function MeshoCodenames() {
     generateNewGame();
   }, [router]);
 
-  const getCardType = (cardObj: CardItem | undefined) => {
-    if (!cardObj) return { label: '', color: 'bg-purple-900/40' };
-    if (gameState.red.some((c: CardItem) => c.id === cardObj.id)) return { label: '🔴 أحمر', color: 'bg-red-600/80 border-red-400' };
-    if (gameState.blue.some((c: CardItem) => c.id === cardObj.id)) return { label: '🔵 أزرق', color: 'bg-blue-600/80 border-blue-400' };
-    if (gameState.yellow.some((c: CardItem) => c.id === cardObj.id)) return { label: '🟡 أصفر', color: 'bg-yellow-600/80 border-yellow-400' };
-    if (gameState.black.some((c: CardItem) => c.id === cardObj.id)) return { label: '⚫ قاتل', color: 'bg-gray-900 border-gray-600' };
-    return { label: '', color: 'bg-purple-900/40' };
+  const handleCardClick = (cardObj: CardItem) => {
+    if (!revealedIds.includes(cardObj.id)) {
+      setRevealedIds(prev => [...prev, cardObj.id]);
+    }
+  };
+
+  const getCardDetails = (cardObj: CardItem) => {
+    if (gameState.red.some((c: CardItem) => c.id === cardObj.id)) {
+      return {
+        color: 'bg-red-600 border-red-400 text-white shadow-[0_0_20px_rgba(239,68,68,0.7)]'
+      };
+    }
+    if (gameState.blue.some((c: CardItem) => c.id === cardObj.id)) {
+      return {
+        color: 'bg-blue-600 border-blue-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.7)]'
+      };
+    }
+    if (gameState.yellow.some((c: CardItem) => c.id === cardObj.id)) {
+      return {
+        color: 'bg-yellow-600 border-yellow-400 text-white shadow-[0_0_20px_rgba(234,179,8,0.7)]'
+      };
+    }
+    if (gameState.black.some((c: CardItem) => c.id === cardObj.id)) {
+      return {
+        color: 'bg-gray-950 border-gray-600 text-gray-300 shadow-[0_0_20px_rgba(0,0,0,0.9)]'
+      };
+    }
+    return { color: 'bg-purple-900/40 text-white' };
   };
 
   const copyToClipboard = (text: string, type: string) => {
@@ -101,8 +123,12 @@ export default function MeshoCodenames() {
     return header + rows.join('\n') + (extraYellow ? '\n' + extraYellow : '') + (extraBlack ? '\n' + extraBlack : '');
   })();
 
+  // قائمة اللاعبين: الكلمة المفتوحة يترك رقمها ومكانها فارغاً تماماً
   const playersText = `لعبة كود نيمز\n-----------------------\nخريطة الكلمات للاعبين (العملاء)\n` +
-    allCards.map((c: CardItem, idx: number) => `${idx + 1}) ${c.name}`).join('\n');
+    allCards.map((c: CardItem, idx: number) => {
+      const isRevealed = revealedIds.includes(c.id);
+      return isRevealed ? `${idx + 1})` : `${idx + 1}) ${c.name}`;
+    }).join('\n');
 
   const redTeamText = `كلمات جواسيس الفريق الأحمر 🔴:\n` + 
     gameState.red.map((c: CardItem, idx: number) => `${idx + 1}) ${c.name}`).join('\n');
@@ -110,10 +136,12 @@ export default function MeshoCodenames() {
   const blueTeamText = `كلمات جواسيس الفريق الأزرق 🔵:\n` + 
     gameState.blue.map((c: CardItem, idx: number) => `${idx + 1}) ${c.name}`).join('\n');
 
+  const remainingRed = gameState.red.filter(c => !revealedIds.includes(c.id)).length;
+  const remainingBlue = gameState.blue.filter(c => !revealedIds.includes(c.id)).length;
+
   return (
     <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white p-4 md:p-8 font-sans">
       
-      {/* رأس الصفحة مع زر العودة المحدث للـ Lobby */}
       <header className="flex justify-between items-center bg-[#18052c] border border-purple-500/30 p-4 rounded-2xl shadow-lg mb-6">
         <h1 className="text-xl md:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
           🎮 Mesho - Codenames
@@ -137,7 +165,6 @@ export default function MeshoCodenames() {
         </div>
       )}
 
-      {/* الأزرار العلوية */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
         <button 
           onClick={generateNewGame}
@@ -156,7 +183,6 @@ export default function MeshoCodenames() {
         </button>
       </div>
 
-      {/* أزرار نسخ كلمات الفريقين بشكل منفصل */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
         <button 
           onClick={() => copyToClipboard(redTeamText, 'كلمات جواسيس الفريق الأحمر')}
@@ -178,20 +204,31 @@ export default function MeshoCodenames() {
           </span>
         </div>
         <div className="flex gap-4 text-sm">
-          <span className="bg-red-950/60 border border-red-500/30 px-3 py-1 rounded-lg">الحمر: {gameState.red.length}</span>
-          <span className="bg-blue-950/60 border border-blue-500/30 px-3 py-1 rounded-lg">الزرق: {gameState.blue.length}</span>
+          <span className="bg-red-950/60 border border-red-500/30 px-3 py-1 rounded-lg">الباقي للحمر: {remainingRed}</span>
+          <span className="bg-blue-950/60 border border-blue-500/30 px-3 py-1 rounded-lg">الباقي للزرق: {remainingBlue}</span>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         {allCards.map((cardObj: CardItem, index: number) => {
-          const info = getCardType(cardObj);
+          const isRevealed = revealedIds.includes(cardObj.id);
+          const { color } = getCardDetails(cardObj);
+
+          if (isRevealed) {
+            return <div key={index} className="hidden"></div>;
+          }
+
           return (
             <div 
               key={index} 
-              className={`p-5 rounded-2xl border text-center shadow-lg flex flex-col items-center justify-center min-h-[100px] transition transform hover:scale-105 ${info.color}`}>
+              onClick={() => handleCardClick(cardObj)}
+              className={`p-5 rounded-2xl border text-center shadow-lg flex flex-col items-center justify-center min-h-[100px] transition-all transform hover:scale-105 cursor-pointer ${color}`}>
+              
               <span className="text-lg font-bold tracking-wide">{cardObj?.name}</span>
-              <span className="text-xs mt-2 opacity-80 bg-black/30 px-2 py-0.5 rounded">{info.label}</span>
+              <span className="text-xs mt-2 opacity-90 bg-black/40 px-2.5 py-0.5 rounded">
+                كلمة #{index + 1}
+              </span>
+
             </div>
           );
         })}

@@ -1,7 +1,9 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export', // هذا هو السطر اللي يحول مشروعك لملفات ثابتة خفيفة
+  images: {
+    unoptimized: true, // ضروري عشان الصور تشتغل في الـ Static Export
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
