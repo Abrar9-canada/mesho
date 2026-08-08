@@ -2,15 +2,26 @@
 
 import React, { useState } from 'react';
 
+// تعريف واجهات الأنواع
+interface AnswerItem {
+  text: string;
+  points: number;
+}
+
+interface QuestionItem {
+  question: string;
+  answers: AnswerItem[];
+}
+
 // قاعدة بيانات دقيقة تضم 500 سؤال وفئة مختلفة، وكل سؤال يحتوي على 6 إجابات بنقاطها
-const database = Array.from({ length: 500 }, (_, index) => {
+const database: QuestionItem[] = Array.from({ length: 500 }, (_, index) => {
   const id = index + 1;
   
   // أمثلة حقيقية لأول عدة أسئلة، والباقي يتم توليدها بتصانيف واقعية ممتعة ومفيدة
-  const samples = [
+  const samples: QuestionItem[] = [
     {
-      q: "اذكر شيئاً غالباً تجده في السوبرماركت",
-      ans: [
+      question: "اذكر شيئاً غالباً تجده في السوبرماركت",
+      answers: [
         { text: "خضار", points: 35 },
         { text: "فواكه", points: 25 },
         { text: "ملابس", points: 15 },
@@ -20,8 +31,8 @@ const database = Array.from({ length: 500 }, (_, index) => {
       ]
     },
     {
-      q: "اذكر شيئاً تأخذه معك عندما تسافر",
-      ans: [
+      question: "اذكر شيئاً تأخذه معك عندما تسافر",
+      answers: [
         { text: "ملابس", points: 40 },
         { text: "جواز سفر", points: 25 },
         { text: "هاتف", points: 15 },
@@ -31,8 +42,8 @@ const database = Array.from({ length: 500 }, (_, index) => {
       ]
     },
     {
-      q: "اذكر شيئاً تضعه في الثلاجة",
-      ans: [
+      question: "اذكر شيئاً تضعه في الثلاجة",
+      answers: [
         { text: "ماء", points: 35 },
         { text: "حليب", points: 25 },
         { text: "خضار", points: 18 },
@@ -42,8 +53,8 @@ const database = Array.from({ length: 500 }, (_, index) => {
       ]
     },
     {
-      q: "اذكر شيئاً تفعله فور الاستيقاظ من النوم صباحاً",
-      ans: [
+      question: "اذكر شيئاً تفعله فور الاستيقاظ من النوم صباحاً",
+      answers: [
         { text: "شرب الماء", points: 35 },
         { text: "غسل الوجه", points: 30 },
         { text: "تصفح الهاتف", points: 20 },
@@ -53,8 +64,8 @@ const database = Array.from({ length: 500 }, (_, index) => {
       ]
     },
     {
-      q: "اذكر وسيلة مواصلات مشهورة",
-      ans: [
+      question: "اذكر وسيلة مواصلات مشهورة",
+      answers: [
         { text: "سيارة", points: 40 },
         { text: "طائرة", points: 25 },
         { text: "قطار", points: 15 },
@@ -66,7 +77,7 @@ const database = Array.from({ length: 500 }, (_, index) => {
   ];
 
   if (index < samples.length) {
-    return { question: samples[index].q, answers: samples[index].ans };
+    return samples[index];
   }
 
   // توليد باقي الـ 500 سؤال بتصانيف وأسئلة عائلية حماسية ومناسبة للعبة
@@ -98,18 +109,18 @@ const database = Array.from({ length: 500 }, (_, index) => {
 });
 
 export default function FamilyFeudGame() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [revealedAnswers, setRevealedAnswers] = useState<boolean[]>(
     new Array(database[0].answers.length).fill(false)
   );
-  const [teamAScore, setTeamAScore] = useState(0);
-  const [teamBScore, setTeamBScore] = useState(0);
-  const [teamAErrors, setTeamAErrors] = useState(0);
-  const [teamBErrors, setTeamBErrors] = useState(0);
+  const [teamAScore, setTeamAScore] = useState<number>(0);
+  const [teamBScore, setTeamBScore] = useState<number>(0);
+  const [teamAErrors, setTeamAErrors] = useState<number>(0);
+  const [teamBErrors, setTeamBErrors] = useState<number>(0);
   
-  const [inputTeamA, setInputTeamA] = useState('');
-  const [inputTeamB, setInputTeamB] = useState('');
-  const [message, setMessage] = useState('');
+  const [inputTeamA, setInputTeamA] = useState<string>('');
+  const [inputTeamB, setInputTeamB] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
 
   const currentQ = database[currentQuestionIndex % database.length];
 
@@ -128,10 +139,10 @@ export default function FamilyFeudGame() {
       updated[index] = true;
       setRevealedAnswers(updated);
       if (team === 'A') {
-        setTeamAScore((prev) => prev + points);
+        setTeamAScore((prev: number) => prev + points);
         setMessage(`🎉 إجابة صحيحة للفريق الأزرق! +${points} نقطة`);
       } else {
-        setTeamBScore((prev) => prev + points);
+        setTeamBScore((prev: number) => prev + points);
         setMessage(`🎉 إجابة صحيحة للفريق الوردي! +${points} نقطة`);
       }
     }
@@ -142,7 +153,7 @@ export default function FamilyFeudGame() {
     if (!val) return;
 
     let foundIndex = -1;
-    currentQ.answers.forEach((ans, idx) => {
+    currentQ.answers.forEach((ans: AnswerItem, idx: number) => {
       if (ans.text.toLowerCase().includes(val) || val.includes(ans.text.toLowerCase())) {
         foundIndex = idx;
       }
@@ -154,11 +165,17 @@ export default function FamilyFeudGame() {
       else setInputTeamB('');
     } else {
       if (team === 'A') {
-        setTeamAErrors((prev) => Math.min(prev + 1, 3));
-        setMessage(`❌ الإجابة غير موجودة أو كشفت مسبقاً للفريق الأزرق! (خطأ ${teamAErrors + 1}/3)`);
+        setTeamAErrors((prev: number) => {
+          const newErrors = Math.min(prev + 1, 3);
+          setMessage(`❌ الإجابة غير موجودة أو كشفت مسبقاً للفريق الأزرق! (خطأ ${newErrors}/3)`);
+          return newErrors;
+        });
       } else {
-        setTeamBErrors((prev) => Math.min(prev + 1, 3));
-        setMessage(`❌ الإجابة غير موجودة أو كشفت مسبقاً للفريق الوردي! (خطأ ${teamBErrors + 1}/3)`);
+        setTeamBErrors((prev: number) => {
+          const newErrors = Math.min(prev + 1, 3);
+          setMessage(`❌ الإجابة غير موجودة أو كشفت مسبقاً للفريق الوردي! (خطأ ${newErrors}/3)`);
+          return newErrors;
+        });
       }
     }
   };
@@ -198,13 +215,13 @@ export default function FamilyFeudGame() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {currentQ.answers.map((ans, idx) => {
+            {currentQ.answers.map((ans: AnswerItem, idx: number) => {
               const isRevealed = revealedAnswers[idx];
               return (
                 <div 
                   key={idx}
                   onClick={() => {
-                    const teamChoice = confirm("اضغط OK لتسجيلها للفريق الأزرق، أو Cancel للفريق الوردي") ? 'A' : 'B';
+                    const teamChoice = window.confirm("اضغط OK لتسجيلها للفريق الأزرق، أو Cancel للفريق الوردي") ? 'A' : 'B';
                     toggleReveal(idx, ans.points, teamChoice);
                   }}
                   className={`p-3 rounded-xl font-bold text-base cursor-pointer transition flex justify-between items-center ${
@@ -264,7 +281,7 @@ export default function FamilyFeudGame() {
         </div>
 
         {message && (
-          <div className="bg-purple-900/80 border border-pink-500/50 text-pink-200 px-6 py-2 rounded-xl text-sm font-bold shadow-lg animate-pulse mb-4">
+          <div className="bg-purple-900/80 border border-pink-500/50 text-pink-200 px-6 py-2 rounded-xl text-sm font-bold shadow-lg animate-pulse mb-4 text-center">
             {message}
           </div>
         )}

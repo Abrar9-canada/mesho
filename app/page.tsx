@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/immutability */
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -18,7 +17,6 @@ export default function MeshoLobby() {
       storedId = Date.now() + Math.random().toString(36).substring(2);
       localStorage.setItem("gameId", storedId);
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setGameId(storedId);
   }, []);
 

@@ -26,7 +26,7 @@ export default function LoginPage() {
       setMessageType('success');
       setMessage('✨ كلمة المرور صحيحة، جاري الدخول...');
       
-      // التوجيه إلى app/page.jsx عن طريق المسار '/'
+      // التوجيه إلى الصفحة الرئيسية عن طريق المسار '/'
       setTimeout(() => {
         router.push('/'); 
       }, 600);
