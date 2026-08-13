@@ -52,9 +52,14 @@ export default function MeshoLobby() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white font-sans flex flex-col justify-between">
+    <div dir="rtl" className="min-h-screen bg-[#0d021a] text-white font-sans flex flex-col justify-between selection:bg-pink-400 selection:text-[#0d021a]">
+      
+      {/* خلفية جمالية متوهجة */}
+      <div className="absolute top-1/4 -right-20 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
       {/* رأس الصفحة */}
-      <header className="py-6 px-4 bg-[#18052c] border-b border-purple-500/30 shadow-[0_0_20px_rgba(255,154,213,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 relative">
+      <header className="py-6 px-6 md:px-12 bg-[#18052c]/90 backdrop-blur-md border-b border-purple-500/30 shadow-[0_0_20px_rgba(255,154,213,0.15)] flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
         <div className="text-center sm:text-right">
           <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
             ⚡🎮 صالة ألعاب Mesho
@@ -62,9 +67,10 @@ export default function MeshoLobby() {
           <p className="text-gray-400 text-sm mt-1">منصتك الجماعية المفضلة لقضاء أمتع الأوقات مع الأصدقاء</p>
         </div>
 
-        <div className="flex items-center gap-3 bg-purple-950/40 border border-purple-500/20 px-4 py-2 rounded-2xl">
+        <div className="flex items-center gap-3 bg-purple-950/40 border border-purple-500/20 px-4 py-2 rounded-2xl shadow-inner">
           <span className="text-sm text-pink-300 font-bold">أهلاً، {userName} ✨</span>
           <button 
+            type="button"
             onClick={handleLogout}
             className="bg-purple-950/80 border border-purple-500/40 hover:bg-purple-900 transition text-pink-300 text-xs px-3 py-1.5 rounded-xl cursor-pointer">
             خروج 🚪
@@ -73,7 +79,7 @@ export default function MeshoLobby() {
       </header>
 
       {/* قائمة الألعاب */}
-      <main className="container mx-auto p-6 max-w-4xl flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-center">
+      <main className="container mx-auto p-6 max-w-4xl flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 items-center z-10">
         {games.map((game, index) => (
           <div
             key={index}
@@ -92,7 +98,7 @@ export default function MeshoLobby() {
       </main>
 
       {/* تذييل الصفحة */}
-      <footer className="text-center py-4 text-xs text-gray-500 border-t border-purple-900/40">
+      <footer className="text-center py-4 text-xs text-gray-500 border-t border-purple-900/40 z-10">
         جميع الحقوق محفوظة © 2026 - Mesho Games
       </footer>
     </div>

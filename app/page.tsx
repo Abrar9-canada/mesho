@@ -3,82 +3,83 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function LoginPage() {
+export default function MeshoHome() {
+  const [name, setName] = useState('');
   const router = useRouter();
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [isShaking, setIsShaking] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleStart = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const correctPassword = "1234"; 
-
-    if (password === correctPassword) {
-      setMessage('كلمة المرور صحيحة، جاري الدخول... ✨');
-      
-      localStorage.setItem("userName", "User"); 
-      localStorage.setItem("roomAuth", "true");
-      localStorage.setItem("gameId", (Date.now() + Math.floor(Math.random() * 100000)).toString());
-
-      setTimeout(() => {
-        router.push('/lobby');
-      }, 1000);
-    } else {
-      setMessage('كلمة المرور غير صحيحة، جاري تحويلك لصفحة الألغاز... ❌');
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 400);
-
-      // التوجيه إلى صفحة الألغاز في حال كانت كلمة المرور خاطئة
-      setTimeout(() => {
-        router.push('/puzzle');
-      }, 1000);
+    if (!name.trim()) {
+      alert('الرجاء إدخال اسمكِ للبدء! ✨');
+      return;
     }
+    // حفظ الاسم في التخزين المحلي ليقبله اللوبي
+    localStorage.setItem('userName', name.trim());
+    // الانتقال للوبي
+    router.push('/lobby');
   };
 
   return (
-    <div dir="rtl" className="relative min-h-screen bg-[radial-gradient(circle_at_center,#18052c_0%,#0d021a_100%)] text-white flex flex-col items-center justify-center p-4 font-sans overflow-hidden">
+    <main dir="rtl" className="min-h-screen bg-[#0d021a] text-white font-sans flex flex-col justify-between items-center p-6 md:p-12 relative overflow-hidden selection:bg-pink-400 selection:text-[#0d021a]">
       
-      <div className="absolute w-[300px] h-[300px] bg-pink-500/15 blur-[80px] rounded-full z-0"></div>
+      {/* تأثيرات إضاءة خلفية */}
+      <div className="absolute top-1/4 -right-20 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 -left-20 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div className={`relative z-10 w-full max-w-md bg-[#18052c]/85 backdrop-blur-md border border-pink-500/40 rounded-[28px] p-8 shadow-[0_20px_40px_rgba(0,0,0,0.6),0_0_25px_rgba(236,72,153,0.15)] text-center ${isShaking ? 'animate-[shake_0.4s_ease-in-out]' : ''}`}>
+      {/* رأس الصفحة */}
+      <header className="w-full max-w-5xl flex justify-between items-center z-10">
+        <div className="flex items-center gap-3">
+          <span className="relative flex h-3.5 w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-pink-500"></span>
+          </span>
+          <h1 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">
+            ⚡ Mesho Games
+          </h1>
+        </div>
+      </header>
+
+      {/* المحتوى الرئيسي */}
+      <section className="w-full max-w-md text-center z-10 my-auto py-12 flex flex-col items-center">
         
-        <div className="text-[45px] mb-4 animate-[bounce_2s_infinite]">
-          ☕
+        <div className="w-24 h-24 mb-6 rounded-3xl bg-[#18052c] border border-purple-500/40 flex items-center justify-center shadow-[0_0_30px_rgba(255,154,213,0.2)]">
+          <span className="text-4xl">🎮</span>
         </div>
 
-        <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300 mb-6">
-          أهلاً بك في صالة بيتكم
-        </h1>
+        <h2 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-tight">
+          منصة <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-300">Mesho</span>
+        </h2>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <input
-            type="password"
-            placeholder="أدخل كلمة المرور..."
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="off"
-            className="w-full bg-[#0d021a]/60 border border-purple-500/50 rounded-2xl px-4 py-3.5 text-center text-white outline-none transition-all duration-300 focus:border-pink-500 focus:shadow-[0_0_15px_rgba(236,72,153,0.3)] placeholder:text-white/40"
+        <p className="text-gray-400 text-sm md:text-base mb-8">
+          اكتبي اسمكِ وانطلقي لتجربة أمتع الألعاب الجماعية!
+        </p>
+
+        {/* نموذج إدخال الاسم وزر هيا بنا */}
+        <form onSubmit={handleStart} className="w-full flex flex-col gap-4">
+          <input 
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="اكتبي اسمكِ هنا..."
+            className="w-full px-5 py-4 rounded-2xl bg-[#18052c] border border-purple-500/40 text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/20 text-center text-lg transition"
           />
 
-          <button
+          <button 
             type="submit"
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 transition py-3.5 rounded-2xl font-bold shadow-[0_4px_15px_rgba(236,72,153,0.4)] cursor-pointer">
-            دخول
+            className="w-full group relative inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-black text-lg shadow-[0_0_25px_rgba(255,154,213,0.4)] hover:shadow-[0_0_35px_rgba(255,154,213,0.7)] hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+          >
+            <span>هيا بنا</span>
+            <span className="transform group-hover:-translate-x-1 transition duration-300">🚀</span>
           </button>
         </form>
 
-        {message && (
-          <p className="mt-4 text-sm font-bold text-pink-300 animate-pulse">
-            {message}
-          </p>
-        )}
-      </div>
+      </section>
 
-      <style jsx global>{`
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-      `}</style>
-    </div>
+      {/* تذييل الصفحة */}
+      <footer className="w-full max-w-5xl text-center text-xs text-gray-500 z-10 border-t border-purple-900/40 pt-6">
+        جميع الحقوق محفوظة © 2026 - Mesho Games
+      </footer>
+
+    </main>
   );
 }

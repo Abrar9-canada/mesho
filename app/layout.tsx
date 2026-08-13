@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "صالة بيتكم",
-  description: "ألعاب ممتعة وتفاعلية",
+  title: "صالة ألعاب Mesho",
+  description: "منصتك الجماعية المفضلة لقضاء أمتع الأوقات مع الأصدقاء بلا حدود",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
-      <body className="h-full">
+      <body className="h-full bg-[#0d021a] text-white">
         {children}
       </body>
     </html>
